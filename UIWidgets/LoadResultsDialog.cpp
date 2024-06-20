@@ -11,6 +11,9 @@
 #include <QGuiApplication>
 #include <QScreen>
 #include <QStandardPaths>
+#ifdef OpenSRA
+#include "OpenSRAPreferences.h"
+#endif
 
 LoadResultsDialog::LoadResultsDialog(WorkflowAppWidget* parent) : QDialog(parent), workflowWidget(parent)
 {
@@ -23,6 +26,8 @@ LoadResultsDialog::LoadResultsDialog(WorkflowAppWidget* parent) : QDialog(parent
 
     workFolderLineEdit = new QLineEdit(this);
     workFolderLineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
+    QString existingDir = OpenSRAPreferences::getInstance()->getLocalWorkDir();
+    workFolderLineEdit->setText(existingDir);
 
     auto browseWorkFolderButton = new QPushButton("Browse",this);
     connect(browseWorkFolderButton,&QPushButton::clicked, this, &LoadResultsDialog::handleGetPathToWorkFolder);
@@ -174,9 +179,8 @@ void LoadResultsDialog::handleLoadResults(void)
     workflowWidget->postprocessResults(resultsPath,QString(),QString());
 #else
     workflowWidget->processResults(resultsPath);
-#endif
-
     statusDialog->appendText("Done loading the results");
+#endif
 }
 
 
@@ -184,7 +188,8 @@ void LoadResultsDialog::handleGetPathToWorkFolder(void)
 {
 
 //    QString existingDir = QCoreApplication::applicationDirPath();
-    QString existingDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+//    QString existingDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    QString existingDir = OpenSRAPreferences::getInstance()->getLocalWorkDir();
 
     QString existingWorkDir = QFileDialog::getExistingDirectory(this,
                                                                    tr("Select Results Folder"),

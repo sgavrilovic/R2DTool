@@ -104,6 +104,7 @@ SOURCES +=  $$PWD/Events/UI/EarthquakeRuptureForecast.cpp \
             $$PWD/Tools/GeoJSONReaderWriter.cpp \
             $$PWD/Tools/ComponentDatabaseManager.cpp \
             $$PWD/Tools/NGAW2Converter.cpp \
+    $$PWD/Tools/Pelicun3PostProcessor.cpp \
             $$PWD/Tools/PelicunPostProcessor.cpp \
             $$PWD/Tools/CBCitiesPostProcessor.cpp \
             $$PWD/Tools/REmpiricalProbabilityDistribution.cpp \
@@ -115,7 +116,6 @@ SOURCES +=  $$PWD/Events/UI/EarthquakeRuptureForecast.cpp \
             $$PWD/UIWidgets/BuildingDMWidget.cpp \
             $$PWD/UIWidgets/BuildingEDPEQWidget.cpp \
             $$PWD/UIWidgets/BuildingEDPWidget.cpp \
-            $$PWD/UIWidgets/CSVTransportNetworkInputWidget.cpp \
             $$PWD/UIWidgets/ColorDialogDelegate.cpp \
             $$PWD/UIWidgets/BuildingModelGeneratorWidget.cpp \
             $$PWD/UIWidgets/BuildingModelingWidget.cpp \
@@ -147,6 +147,7 @@ SOURCES +=  $$PWD/Events/UI/EarthquakeRuptureForecast.cpp \
             $$PWD/UIWidgets/SiteSpecifiedMapping.cpp \
             $$PWD/UIWidgets/GISBasedMapping.cpp \
             $$PWD/UIWidgets/OpenSeesPyBuildingModel.cpp \
+            $$PWD/UIWidgets/SurrogatePyFilter.cpp \
             $$PWD/UIWidgets/WaterNetworkPerformanceModel.cpp \
             $$PWD/UIWidgets/PelicunDLWidget.cpp \
             $$PWD/UIWidgets/Pelicun3DLWidget.cpp \	    
@@ -226,6 +227,7 @@ HEADERS +=  $$PWD/Events/UI/EarthquakeRuptureForecast.h \
             $$PWD/Tools/GeoJSONReaderWriter.h \
             $$PWD/Tools/ComponentDatabaseManager.h \
             $$PWD/Tools/NGAW2Converter.h \
+    $$PWD/Tools/Pelicun3PostProcessor.h \
             $$PWD/Tools/PelicunPostProcessor.h \
             $$PWD/Tools/CBCitiesPostProcessor.h \
             $$PWD/Tools/REmpiricalProbabilityDistribution.h \
@@ -238,7 +240,6 @@ HEADERS +=  $$PWD/Events/UI/EarthquakeRuptureForecast.h \
             $$PWD/UIWidgets/BuildingDMWidget.h \
             $$PWD/UIWidgets/BuildingEDPEQWidget.h \
             $$PWD/UIWidgets/BuildingEDPWidget.h \
-            $$PWD/UIWidgets/CSVTransportNetworkInputWidget.h \
             $$PWD/UIWidgets/ColorDialogDelegate.h \
             $$PWD/UIWidgets/GISObjectTypeMapping.h \
             $$PWD/UIWidgets/BuildingModelGeneratorWidget.h \
@@ -271,6 +272,7 @@ HEADERS +=  $$PWD/Events/UI/EarthquakeRuptureForecast.h \
             $$PWD/UIWidgets/SiteSpecifiedMapping.h \
             $$PWD/UIWidgets/GISBasedMapping.h \
             $$PWD/UIWidgets/OpenSeesPyBuildingModel.h \
+            $$PWD/UIWidgets/SurrogatePyFilter.h \
             $$PWD/UIWidgets/WaterNetworkPerformanceModel.h \
             $$PWD/UIWidgets/PelicunDLWidget.h \
             $$PWD/UIWidgets/Pelicun3DLWidget.h \	    

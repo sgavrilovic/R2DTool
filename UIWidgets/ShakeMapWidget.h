@@ -134,6 +134,7 @@ signals:
     void loadingComplete(const bool value);
 
 private:
+    void selectClear();
 
     QStackedWidget* shakeMapStackedWidget = nullptr;
 

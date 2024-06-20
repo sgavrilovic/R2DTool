@@ -98,13 +98,21 @@ TreeItem* CustomListWidget::addItem(const QJsonObject& obj, TreeItem* parent)
         return nullptr;
     }
 
-    auto weight = obj.value("ModelWeight").toDouble();
-
 #ifdef OpenSRA
-    auto aleVal = obj.value("Aleatory").toString();
+    auto weight = modelObj.value("ModelWeight").toDouble();
+
+    QString aleVal;
+    if (modelObj.value("Aleatory").isDouble())
+        aleVal = QString::number(modelObj.value("Aleatory").toDouble());
+    else
+        aleVal = modelObj.value("Aleatory").toString();
     if (aleVal.length()==0)
         aleVal = "Preferred";
-    auto epiVal = obj.value("Epistemic").toString();
+    QString epiVal;
+    if (modelObj.value("Epistemic").isDouble())
+        epiVal = QString::number(modelObj.value("Epistemic").toDouble());
+    else
+        epiVal = modelObj.value("Epistemic").toString();
     if (epiVal.length()==0)
         epiVal = "Preferred";
     QString newItemText = item
@@ -112,6 +120,7 @@ TreeItem* CustomListWidget::addItem(const QJsonObject& obj, TreeItem* parent)
             + "\n - aleatory="+ aleVal
             + "\n - epistemic="+ epiVal;
 #else
+    auto weight = obj.value("ModelWeight").toDouble();
     QString newItemText = item + " - weight="+ QString::number(weight);
 #endif
 

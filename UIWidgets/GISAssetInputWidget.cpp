@@ -101,8 +101,7 @@ GISAssetInputWidget::GISAssetInputWidget(QWidget *parent, VisualizationWidget* v
     // mainWidgetLayout->insertWidget(insPoint-3,crsSelectorWidget);
     //
 #else
-    auto insPoint = mainWidgetLayout->count();
-    mainWidgetLayout->insertWidget(insPoint-3,crsSelectorWidget);
+    mainWidgetLayout->addWidget(crsSelectorWidget,0,0,1,4);
 #endif
 
     //    pathToComponentInputFile = "/Users/steve/Desktop/GalvestonTestbed/GalvestonGIS/GalvestonBuildings/galveston-bldg-v7.shp";
@@ -115,6 +114,10 @@ GISAssetInputWidget::GISAssetInputWidget(QWidget *parent, VisualizationWidget* v
 GISAssetInputWidget::~GISAssetInputWidget()
 {
 
+}
+
+CRSSelectionWidget* GISAssetInputWidget::getCRSSelectorWidget(){
+    return crsSelectorWidget;
 }
 
 
@@ -151,6 +154,9 @@ bool GISAssetInputWidget::outputToJSON(QJsonObject &rvObject)
         return false;
     }
 
+#ifdef OpenSRA
+    rvObject.insert("SiteDataFile", appData["pathToSource"].toString());
+#else
     auto assetFileName = appData["assetGISFile"].toString();
 
     auto assetFilePath = appData["pathToSource"].toString();
@@ -159,11 +165,17 @@ bool GISAssetInputWidget::outputToJSON(QJsonObject &rvObject)
     auto assetDirName = dirInfo.dirName();
     auto pathToFile = assetDirName + QDir::separator() + assetFileName;
 
+#ifdef OpenSRA
+    if (assetFileName.contains(".shp") || assetFileName.contains(".gpkg"))
+        pathToFile = assetFilePath + QDir::separator() + assetFileName;
+#endif
+
     //    auto pathToFile = assetFilePath + QDir::separator() + assetFileName;
 
     //    auto pathToFile = assetFileName;
 
     rvObject.insert("SiteDataFile", pathToFile);
+#endif
 
     if(!appData.contains("CRS"))
     {
@@ -280,7 +292,7 @@ int GISAssetInputWidget::loadAssetVisualization()
 }
 
 
-bool GISAssetInputWidget::loadAssetData(void)
+bool GISAssetInputWidget::loadAssetData(bool message)
 {
     // Ask for the file path if the file path has not yet been set, and return if it is still null
     if(pathToComponentInputFile.compare("NULL") == 0)
@@ -337,8 +349,11 @@ bool GISAssetInputWidget::loadAssetData(void)
         return false;
     }
     else{
-        this->statusMessage("Loading information for " + QString::number(numFeat)+ " assets");
-        QApplication::processEvents();
+        if (message){
+            this->statusMessage("Loading information for " + QString::number(numFeat)+ " assets");
+            QApplication::processEvents();
+        }
+
     }
 
     auto layerId = mainLayer->id();
@@ -364,7 +379,7 @@ bool GISAssetInputWidget::loadAssetData(void)
     }
 
     // Add the ID column to the headers
-    //fieldsStrList.push_front("ID");
+//    fieldsStrList.push_front("Index");
 
     tableHorizontalHeadings = fieldsStrList;
 
@@ -382,6 +397,7 @@ bool GISAssetInputWidget::loadAssetData(void)
     {
         //QStringList attributeStrList = {QString::number(i+1)};
         QStringList attributeStrList;
+//        attributeStrList.push_back(QString::number(i));
 
         auto attributes = feat.attributes();
         for(int i = 0; i<attributes.size(); ++i)
@@ -410,8 +426,9 @@ bool GISAssetInputWidget::loadAssetData(void)
 
     componentTableWidget->clear();
     componentTableWidget->getTableModel()->populateData(data, tableHorizontalHeadings);
-
+#ifdef OpenSRA
     label3->show();
+#endif
     componentTableWidget->show();
     componentTableWidget->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Interactive);
 
@@ -552,7 +569,7 @@ bool GISAssetInputWidget::inputAppDataFromJSON(QJsonObject &jsonObject)
             this->errorMessage(errMessage);
             return false;
         }
-
+        QApplication::processEvents();
         if (appData.contains("filter"))
             this->setFilterString(appData["filter"].toString());
 
@@ -643,6 +660,55 @@ bool GISAssetInputWidget::copyFiles(QString &destName)
 
     // Then create the csv file
     return AssetInputWidget::copyFiles(destPath);
+}
+
+bool GISAssetInputWidget::copyFilesGeoJSON(QString &destName)
+{
+
+
+    // Copy over the gis file(s), note that if it is a gdb or shapefile, it will have other supporting files with the main file
+    auto compLineEditText = componentFileLineEdit->text();
+
+    QFileInfo componentFile(compLineEditText);
+
+    if (!componentFile.exists())
+        return false;
+
+    QString destFileName = componentFile.baseName() + ".geojson";
+
+    auto destPath = destName + QDir::separator() + destFileName;
+
+    QDir dirDest(destName);
+
+    if (!dirDest.exists())
+    {
+        if (!dirDest.mkpath(destPath))
+        {
+            QString errMsg = QString("Could not create destination Dir: ") + destPath;
+            this->errorMessage(errMsg);
+
+            return false;
+        }
+    }
+//    QgsVectorFileWriter writer = QgsVectorFileWriter();
+    auto options = QgsVectorFileWriter::SaveVectorOptions();
+    options.driverName = "geoJson";
+    if(mainLayer != nullptr){
+        auto err = QgsVectorFileWriter::writeAsVectorFormat(mainLayer,
+                                                           destPath,
+                                                           options);
+        if (err !=0) {
+            QString msg = "Error saving GIS files as GeoJSON format in the directory " + destPath + "\n Try converting them to GeoJSON and then load them again.";
+            errorMessage(msg);
+            return false;
+        }
+    } else {
+        QString msg = "Source layer not defined when saving GIS files as GeoJSON format in the directory " + destPath;
+                errorMessage(msg);
+                return false;
+    }
+
+    return true;
 }
 
 
